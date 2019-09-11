@@ -1,0 +1,101 @@
+version: 2
+
+jobs:
+  build-clang-7:
+    steps: &clangbuildsteps
+      - run:
+          name: Install Dependencies
+          command: 'apt-get update && apt-get install --no-install-recommends -y git cmake openssh-client'
+
+      - checkout
+
+      - run:
+          name: Create Build Files
+          command: 'cmake . -Bbuild'
+
+      - run:
+          name: Build Binaries
+          command: 'cmake --build build'
+
+      - run:
+          name: Run Unit Tests
+          command: './build/tests/test_digestible'
+
+      - run:
+          name: Run Utility With Default Settings
+          command: './build/utility/utility'
+
+    docker:
+      - image: teeks99/clang-ubuntu:7
+        environment:
+          CXX: /usr/lib/llvm-7/bin/clang++
+
+  build-clang-8:
+    steps:
+      *clangbuildsteps
+
+    docker:
+      - image: teeks99/clang-ubuntu:8
+        environment:
+          CXX: /usr/lib/llvm-8/bin/clang++
+
+  build-clang-9:
+    steps:
+      *clangbuildsteps
+
+    docker:
+      - image: teeks99/clang-ubuntu:9
+        environment:
+          CXX: /usr/lib/llvm-9/bin/clang++
+
+  build-gcc-7:
+    steps: &gccbuildsteps
+      - run:
+          name: Install Dependencies
+          command: 'apt-get update && apt-get install --no-install-recommends -y cmake'
+
+      - checkout
+
+      - run:
+          name: Create Build Files
+          command: 'cmake . -Bbuild'
+
+      - run:
+          name: Build Binaries
+          command: 'cmake --build build'
+
+      - run:
+          name: Run Unit Tests
+          command: './build/tests/test_digestible'
+
+      - run:
+          name: Run Utility With Default Settings
+          command: './build/utility/utility'
+
+    docker:
+      - image: gcc:7
+
+  build-gcc-8:
+    steps:
+      *gccbuildsteps
+
+    docker:
+      - image: gcc:8
+
+  build-gcc-9:
+    steps:
+      *gccbuildsteps
+
+    docker:
+      - image: gcc:9
+
+workflows:
+  version: 2
+  compile_check:
+    jobs:
+      - build-clang-7
+      - build-clang-8
+      - build-clang-9
+      - build-gcc-7
+      - build-gcc-8
+      - build-gcc-9
