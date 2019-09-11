@@ -450,7 +450,7 @@ static double lerp(double a, double b, double t) noexcept
 
     if (t == 1) return b;
     const double x = a + t * (b - a);
-    if (t > 1 == b > a)
+    if ((t > 1) == (b > a))
         return b < x ? x : b;
     else
         return x < b ? x : b;

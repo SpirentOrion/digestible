@@ -48,7 +48,7 @@ jobs:
         environment:
           CXX: /usr/lib/llvm-9/bin/clang++
 
-  build-gcc-7:
+  build-gcc-8:
     steps: &gccbuildsteps
       - run:
           name: Install Dependencies
@@ -73,13 +73,6 @@ jobs:
           command: './build/utility/utility'
 
     docker:
-      - image: gcc:7
-
-  build-gcc-8:
-    steps:
-      *gccbuildsteps
-
-    docker:
       - image: gcc:8
 
   build-gcc-9:
@@ -96,6 +89,5 @@ workflows:
       - build-clang-7
       - build-clang-8
       - build-clang-9
-      - build-gcc-7
       - build-gcc-8
       - build-gcc-9

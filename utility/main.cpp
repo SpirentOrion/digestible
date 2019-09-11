@@ -209,11 +209,6 @@ static bool validate_parameters()
         are_valid = false;
     }
 
-    if (value_count < 0) {
-        std::cerr << "Value Count must be greater than 0." << std::endl;
-        are_valid = false;
-    }
-
     if (max_error < 0) {
         std::cerr << "Maximum percent error must be greater than 0." << std::endl;
         are_valid = false;
@@ -534,11 +529,11 @@ static void output_results(std::vector<double> &results)
           std::cout << "Warning: detected " << invalid_trials << " trials with percent error greater than "
                     << max_error << ". Results below are only for valid trials." << std::endl;
 
-          sum = std::accumulate(results.begin(), results.end(), 0.0, [](double sum, double val) {
+          sum = std::accumulate(results.begin(), results.end(), 0.0, [](double total, double val) {
                                                                          if (val >= 0) {
-                                                                             sum += val;
+                                                                             total += val;
                                                                          }
-                                                                         return (sum);});
+                                                                         return (total);});
           avg = (results.size() - invalid_trials != 0) ? sum /
               static_cast<double>(results.size() - invalid_trials) : 0;
 
