@@ -1,5 +1,5 @@
 
-# digestible
+# digestible [![CircleCI](https://circleci.com/gh/SpirentOrion/digestible.svg?style=svg)](https://circleci.com/gh/SpirentOrion/digestible)
 
 A modern C++ implementation of a merging `t-digest` data structure.
 
