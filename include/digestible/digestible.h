@@ -514,11 +514,10 @@ double tdigest<Values, Weight>::quantile(double p) const
         return (false);
     };
 
-    auto it = std::adjacent_find(active->values.begin(), active->values.end(), quantile_fn);
-
-    if (it == active->values.end()) {
-        throw std::runtime_error("Could not calculate quantile " + std::to_string(p));
-    }
+    // Even though we're using adjacent_find here, we don't actually intend to find
+    // anything.  We just want to iterate over pairs of centroids until we calculate
+    // the quantile.
+    std::adjacent_find(active->values.begin(), active->values.end(), quantile_fn);
 
     return (quantile);
 }
