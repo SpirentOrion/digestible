@@ -349,6 +349,7 @@ static auto find_compression_factor()
 
     while (true) {
         auto [epsilon, time] = tdigest_trial<Values, Weight>(inputs, current);
+        (void)time;  // silence unused variable warning
 
         if (epsilon < (max_error / 100.0)) {
             break;
@@ -366,6 +367,7 @@ static auto find_max_error()
     auto inputs = generate_inputs<Inputs>();
 
     auto [epsilon, duration] = tdigest_trial<Values, Weight>(inputs, compression_factor);
+    (void)duration;  // silence unused variable warning
 
     return (epsilon);
 }
@@ -377,6 +379,7 @@ static auto verify_error_comp_factor()
 
     auto [epsilon, time] =
         tdigest_trial<Values, Weight>(inputs, compression_factor);
+    (void)time;  // silence unused variable warning
 
     if (epsilon <= (max_error / 100.0)) {
         return (true);
