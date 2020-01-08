@@ -305,7 +305,7 @@ std::vector<std::pair<Values, Weight>> tdigest<Values, Weight>::get() const
  * C++ translation of the "k_2" version found in the reference implementation
  * available here: https://github.com/tdunning/t-digest
  */
-static double Z(double compression, double n)
+inline double Z(double compression, double n)
 {
     return (4 * log(n / compression) + 24);
 }
@@ -314,7 +314,7 @@ static double Z(double compression, double n)
  * C++ translation of the "k_2" version found in the reference implementation
  * available here: https://github.com/tdunning/t-digest
  */
-static double normalizer_fn(double compression, double n)
+inline double normalizer_fn(double compression, double n)
 {
     return (compression / Z(compression, n));
 }
@@ -323,7 +323,7 @@ static double normalizer_fn(double compression, double n)
  * C++ translation of the "k_2" version found in the reference implementation
  * available here: https://github.com/tdunning/t-digest
  */
-static double k(double q, double normalizer)
+inline double k(double q, double normalizer)
 {
     const double q_min = 1e-15;
     const double q_max = 1 - q_min;
@@ -340,7 +340,7 @@ static double k(double q, double normalizer)
  * C++ translation of the "k_2" version found in the reference implementation
  * available here: https://github.com/tdunning/t-digest
  */
-static double q(double k, double normalizer)
+inline double q(double k, double normalizer)
 {
     double w = exp(k / normalizer);
     return (w / (1 + w));
@@ -444,7 +444,7 @@ void tdigest<Values, Weight>::merge()
  * under an "Apache 2.0 license with LLVM Exceptions." The project can be
  * found at https://github.com/llvm-mirror/libcxx
  */
-static double lerp(double a, double b, double t) noexcept
+inline double lerp(double a, double b, double t) noexcept
 {
     if ((a <= 0 && b >= 0) || (a >= 0 && b <= 0)) return t * b + (1 - t) * a;
 
