@@ -323,10 +323,13 @@ static auto tdigest_trial(const std::vector<Inputs> &values,
 
     double epsilon = -1;
 
-    for (double x = min_value; x <= max_value; x += max_value / 10) {
-      double target = x / max_value;
-      epsilon = std::max(fabs(target - digest.cumulative_distribution(x)),
-                         epsilon);
+    static constexpr unsigned test_count = 10;
+    for (double test_point = 1; test_point <= test_count; test_point++)
+    {
+        auto target = test_point / test_count;
+        auto x = target * (max_value - min_value) + min_value;
+        epsilon = std::max(fabs(target - digest.cumulative_distribution(x)),
+                           epsilon);
     }
 
     return (std::make_pair(epsilon, diff.count()));
@@ -342,7 +345,7 @@ static auto find_compression_factor()
 {
     auto inputs = generate_inputs<Inputs>();
 
-    static constexpr unsigned min = 10;
+    static constexpr unsigned min = 4;
     static constexpr unsigned delta = 2;
 
     unsigned current = min;
@@ -352,6 +355,11 @@ static auto find_compression_factor()
         (void)time;  // silence unused variable warning
 
         if (epsilon < (max_error / 100.0)) {
+            break;
+        }
+
+        if (current > inputs.size()) {
+            std::cout << "Warning: with current parameters Compression Factor exceeds the size of the input data." << std::endl;
             break;
         }
 
