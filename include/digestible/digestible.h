@@ -517,7 +517,13 @@ double tdigest<Values, Weight>::quantile(double p) const
     // Even though we're using adjacent_find here, we don't actually intend to find
     // anything.  We just want to iterate over pairs of centroids until we calculate
     // the quantile.
-    std::adjacent_find(active->values.begin(), active->values.end(), quantile_fn);
+    auto it =std::adjacent_find(active->values.begin(), active->values.end(), quantile_fn);
+
+    // Did we fail to find a pair of bracketing centroids?
+    if (it == active->values.end()) {
+        // Must be between max_val and the last centroid.
+        return active->values.back().mean;
+    }
 
     return (quantile);
 }
