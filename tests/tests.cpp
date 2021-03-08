@@ -172,4 +172,24 @@ TEST_CASE("insert and query quantile", "[t-digest]")
             REQUIRE(fabs(target - digest.quantile(x)) < epsilon);
         }
     }
+
+    SECTION("pair of values")
+    {
+        const uint64_t first_val = 1.0;
+        const uint64_t last_val = 2.0;
+
+        tdigest<uint64_t, unsigned> digest(25);
+
+        digest.insert(first_val);
+        digest.insert(last_val);
+        digest.merge();
+
+        for (double q = 0; q <= 100.0; q += 0.1) {
+            if (q < 50.0) {
+                REQUIRE(digest.quantile(q) == first_val);
+            } else {
+                REQUIRE(digest.quantile(q) == last_val);
+            }
+        }
+    }
 }
