@@ -48,6 +48,24 @@ jobs:
         environment:
           CXX: /usr/lib/llvm-9/bin/clang++
 
+  build-clang-10:
+    steps:
+      *clangbuildsteps
+
+    docker:
+      - image: teeks99/clang-ubuntu:10
+        environment:
+          CXX: /usr/lib/llvm-10/bin/clang++
+
+  build-clang-11:
+    steps:
+      *clangbuildsteps
+
+    docker:
+      - image: teeks99/clang-ubuntu:11
+        environment:
+          CXX: /usr/lib/llvm-11/bin/clang++
+
   build-gcc-8:
     steps: &gccbuildsteps
       - run:
@@ -82,6 +100,13 @@ jobs:
     docker:
       - image: gcc:9
 
+  build-gcc-10:
+    steps:
+      *gccbuildsteps
+
+    docker:
+      - image: gcc:10
+
 workflows:
   version: 2
   compile_check:
@@ -89,5 +114,8 @@ workflows:
       - build-clang-7
       - build-clang-8
       - build-clang-9
+      - build-clang-10
+      - build-clang-11
       - build-gcc-8
       - build-gcc-9
+      - build-gcc-10
