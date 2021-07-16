@@ -28,9 +28,9 @@ using namespace digestible;
 tdigest digest(20);
 
 // Add some data into the structure.
-digest.add(5);
-digest.add(10);
-digest.add(4);
+digest.insert(5);
+digest.insert(10);
+digest.insert(4);
 
 // digestible buffers input data; explicitly merge it before querying statistics.
 digest.merge();
