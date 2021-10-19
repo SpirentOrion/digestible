@@ -193,3 +193,45 @@ TEST_CASE("insert and query quantile", "[t-digest]")
         }
     }
 }
+
+TEST_CASE("copy and move", "[t-digest]")
+{
+    SECTION("copy")
+    {
+        auto a = tdigest<int, unsigned>(25);
+        for(auto i = 1; i <= 10; i++) {
+            a.insert(i);
+        }
+        a.merge();
+
+        auto b = a;
+
+        REQUIRE(a.size() == b.size());
+        REQUIRE(a.centroid_count() == b.centroid_count());
+        REQUIRE(a.quantile(10) == b.quantile(10));
+
+        auto data_a = a.get();
+        auto data_b = b.get();
+        REQUIRE(std::equal(std::begin(data_a), std::end(data_a), std::begin(data_b)));
+    }
+
+    SECTION("move")
+    {
+        auto a = tdigest<int, unsigned>(25);
+        for(auto i = 1; i <= 10; i++) {
+            a.insert(i);
+        }
+        a.merge();
+
+        auto b = std::move(a);
+
+        REQUIRE(a.size() == 0);
+        REQUIRE(b.size() != 0);
+
+        auto data_a = a.get();
+        REQUIRE(data_a.empty());
+
+        auto data_b = b.get();
+        REQUIRE(!data_b.empty());
+    }
+}

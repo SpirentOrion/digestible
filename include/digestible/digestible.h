@@ -95,6 +95,8 @@ class tdigest
             values.clear();
             total_weight = 0;
         }
+
+        size_t capacity() const { return (values.capacity()); }
     };
 
     tdigest_impl one;
@@ -112,10 +114,16 @@ class tdigest
     Values min_val, max_val;
     bool run_forward;
 
+    void swap(tdigest&);
+
 public:
     explicit tdigest(size_t size);
 
     tdigest() = delete;
+
+    tdigest(const tdigest&);
+    tdigest(tdigest&&) noexcept;
+    tdigest& operator=(tdigest);
 
     /**
      * Inserts the given value into the t-digest input buffer.
@@ -258,6 +266,44 @@ tdigest<Values, Weight>::tdigest(size_t size)
     , max_val(std::numeric_limits<Values>::lowest())
     , run_forward(true)
 {}
+
+template <typename Values, typename Weight>
+tdigest<Values, Weight>::tdigest(const tdigest<Values, Weight>& other)
+    : one(other.one)
+    , two(other.two)
+    , buffer(other.buffer)
+    , active(other.active == &other.one ? &one : &two)
+    , min_val(other.min_val)
+    , max_val(other.max_val)
+    , run_forward(other.run_forward)
+{}
+
+template <typename Values, typename Weight>
+void tdigest<Values, Weight>::swap(tdigest<Values, Weight>& other)
+{
+    std::swap(one, other.one);
+    std::swap(two, other.two);
+    std::swap(buffer, other.buffer);
+    active = other.active == &other.one ? &one : &two;
+    other.active = active == &one ? &other.one : &other.two;
+    std::swap(min_val, other.min_val);
+    std::swap(max_val, other.max_val);
+    std::swap(run_forward, other.run_forward);
+}
+
+template <typename Values, typename Weight>
+tdigest<Values, Weight>::tdigest(tdigest<Values, Weight>&& other) noexcept
+    : tdigest(other.one.capacity())
+{
+    swap(other);
+}
+
+template <typename Values, typename Weight>
+tdigest<Values, Weight>& tdigest<Values, Weight>::operator=(tdigest<Values, Weight> other)
+{
+    swap(other);
+    return (*this);
+}
 
 template <typename Values, typename Weight>
 void tdigest<Values, Weight>::insert(const tdigest<Values, Weight> &src)
@@ -517,7 +563,7 @@ double tdigest<Values, Weight>::quantile(double p) const
     // Even though we're using adjacent_find here, we don't actually intend to find
     // anything.  We just want to iterate over pairs of centroids until we calculate
     // the quantile.
-    auto it =std::adjacent_find(active->values.begin(), active->values.end(), quantile_fn);
+    auto it = std::adjacent_find(active->values.begin(), active->values.end(), quantile_fn);
 
     // Did we fail to find a pair of bracketing centroids?
     if (it == active->values.end()) {
