@@ -276,7 +276,11 @@ tdigest<Values, Weight>::tdigest(const tdigest<Values, Weight>& other)
     , min_val(other.min_val)
     , max_val(other.max_val)
     , run_forward(other.run_forward)
-{}
+{
+    one.values.reserve(other.one.capacity());
+    two.values.reserve(other.two.capacity());
+    buffer.values.reserve(other.buffer.capacity() * buffer_multiplier);
+}
 
 template <typename Values, typename Weight>
 void tdigest<Values, Weight>::swap(tdigest<Values, Weight>& other)
